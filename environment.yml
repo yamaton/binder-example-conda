@@ -11,3 +11,6 @@ dependencies:
   - partd
   - bokeh
   - dask
+  - jupyterlab >=3.3.0,<4.0.0a0
+  - jupyter_server <2.0.0
+  - jupyterhub-singleuser >=3.1.0
