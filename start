@@ -16,3 +16,7 @@ else
     echo "after : $(echo "$@" | sed 's/notebook/lab/' | sed 's/NotebookApp/ServerApp/g') --debug"
     exec $(echo "$@" | sed 's/notebook/lab/' | sed 's/NotebookApp/ServerApp/g') --debug
 fi
+
+
+# Set timezone properly
+export TZ=Etc/UTC
