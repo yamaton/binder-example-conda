@@ -2,5 +2,11 @@
     "FileContentsManager": {
         "delete_to_trash": true,
         "always_delete_dir": true
+    },
+    "SingleUserNotebookApp": {
+        "notebook_dir": "work"
+    },
+    "ServerApp": {
+        "root_dir": "work"
     }
 }
