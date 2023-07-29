@@ -1,22 +1,26 @@
 #!/bin/bash
 
+zshloc="$(command -v zsh)"
+export SHELL="$zshloc"
+
+# Default timezone is non-standard '/UTC',
+# which triggers an error in `tzlocal` with python<=3.8
+export TZ=Etc/UTC
+
 if [[ -n $JUPYTERHUB_CLIENT_ID ]]; then
     # === For JupyterHub build ===
     # https://jupyterhub.readthedocs.io/en/stable/reference/config-user-env.html#switching-back-to-the-classic-notebook
     export JUPYTERHUB_SINGLEUSER_APP='jupyter_server.serverapp.ServerApp'
-    echo "🤖 Assumig JupyterHub is running"
+    echo "🤖 Guess JupyterHub is running..."
     echo "\$JUPYTERHUB_CLIENT_ID = $JUPYTERHUB_CLIENT_ID"
-    echo "launch command:" "$@"
-    exec "$@"
+    echo "before:" "$@"
+    echo "after : $(echo "$@" | sed 's|--notebook-dir=/home/jovyan | |')"
+    exec $(echo "$@" | sed 's|--notebook-dir=/home/jovyan | |')
 else
     # === For local build with repo2docker ===
     # Replaces the back end: NotebookApp --> ServerApp
-    echo "🐻 Assuming ruuning with Repo2Docker (w/o JupyterHub)"
+    echo "🐻 Guess Repo2Docker (w/o JupyterHub) is running..."
     echo "before:" "$@"
     echo "after : $(echo "$@" | sed 's/notebook/lab/' | sed 's/NotebookApp/ServerApp/g') --debug"
     exec $(echo "$@" | sed 's/notebook/lab/' | sed 's/NotebookApp/ServerApp/g') --debug
 fi
-
-
-# Set timezone properly
-export TZ=Etc/UTC
