@@ -4,4 +4,4 @@ channels:
 dependencies:
   - jupyterlab
   - pip:
-    - git+https://github.com/jpmorganchase/jupyter-fs
+    - git+https://github.com/yamaton/jupyter-fs@test
