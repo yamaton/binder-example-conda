@@ -1,0 +1,16 @@
+man
+coreutils
+jq
+htop
+emacs
+vim
+nano
+neofetch
+source-highlight
+zsh
+apt-utils
+rsync
+cmake
+iputils-ping
+iproute2
+speedtest-cli
