@@ -5,4 +5,4 @@ dependencies:
   - jupyterlab <4
   - jupyter_server >=2
   - pip:
-    - git+https://github.com/yamaton/jupyterlab-s3-browser@dev
+    - git+https://github.com/yamaton/jupyterlab-s3-browser@test
