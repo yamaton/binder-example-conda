@@ -1,0 +1,11 @@
+name: example-environment
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - websockify
+  - pipx
+  - pip:
+    - git+https://github.com/yamaton/jupyter-remote-desktop-proxy@test
+

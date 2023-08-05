@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# https://repo2docker.readthedocs.io/en/latest/config_files.html#postbuild-run-code-after-installing-the-environment
+# > Note that by default the build will not be stopped
+# > if an error occurs inside a shell script. You should
+# > include set -e or the equivalent at the start of the
+# > script to avoid errors being silently ignored.
+set -o errexit
+set -o nounset
+
+
+# pipx: install programs in each virtual environment
+export PIPX_HOME=/srv/conda/pipx
+mkdir -p "$PIPX_HOME"
+TOOLS=( "$(cat ~/binder/_tools_pipx.txt)" )
+for _tool in ${TOOLS[*]}; do
+    echo "Installing ${_tool}"
+    # retry if nonzero exit status occurs
+    if [[ ! ($(pipx install "$_tool")) ]]; then
+        echo "pipx retrying... $_tool"
+        pipx uninstall "$_tool"
+        pipx install "$_tool"
+    fi
+done
+
+
+# Tweak exit code of the condax runner scripts
+export CONDAX_HIDE_EXITCODE=1
+# condax: install programs in each conda environment
+mkdir -p /srv/conda/condax/envs
+mkdir -p ~/.config/condax
+echo "use_lockfiles: false" > ~/.mambarc
+echo "prefix_dir: /srv/conda/condax/envs" > ~/.config/condax/config.yaml
+
+mkdir -p ~/.local/logs
+CONDAX_LOG="$HOME/.local/logs/condax_install_log.txt"
+TOOLS=( "$(cat ~/binder/_tools_condax.txt)" )
+for _tool in ${TOOLS[*]}; do
+    echo "Installing ${_tool}" | tee -a "$CONDAX_LOG"
+    # retry if nonzero exit status occurs
+    if [[ ! ($(condax install -c conda-forge -c bioconda --force "$_tool" 2>&1 | tee -a "$CONDAX_LOG")) ]]; then
+        echo "condax retrying... $_tool" | tee -a "$CONDAX_LOG"
+        condax remove "$_tool" | tee -a "$CONDAX_LOG"
+        condax install -c conda-forge -c bioconda --force "$_tool" 2>&1 | tee -a "$CONDAX_LOG"
+    fi
+    mamba clean --all --yes --force-pkgs-dirs
+done
+
+
+## Disable Jupyter news announcement
+jupyter labextension disable "@jupyterlab/apputils-extension:announcements"
+
+
+# List extensions
+jupyter serverextension list
+jupyter server extension list
+jupyter labextension list
+jupyter lab extension list
+
+
+## [NOTE] Place this AFTER conda packages setups.
+##
+## Change conda envs directories and pkgs directories s.t.
+## users can keep user-installed conda packages persistently.
+mkdir -p ~/.local/share/conda/envs
+mkdir -p ~/.local/share/conda/pkgs
+cat << 'EOF' >> ~/.condarc
+channels:
+  - conda-forge
+  - bioconda
+
+envs_dirs:
+  - ~/.local/share/conda/envs
+  - /srv/conda/envs
+
+pkgs_dirs:
+  - ~/.local/share/conda/pkgs
+  - /srv/conda/pkgs
+
+EOF
+
+
+## Remove cache
+##
+## otherwise the size $HOME gets too large that
+## docker volume initialization triggers a timeout
+## at the very first startup of an environment
+rm -rf ~/.cache
+rm -rf ~/.npm
+rm -rf ~/.yarn
+
+
+
+## show the end of postBuild
+echo "Done postBuild"
