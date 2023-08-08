@@ -1,10 +1,2 @@
 bandage
-
-bat
-fd-find
-rename
-ripgrep
-xsv
-magic-wormhole
-trash-cli
-rclone
+igv
