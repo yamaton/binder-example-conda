@@ -1,1 +1,4 @@
+bio
+s3cmd
+fastqp
 git+https://github.com/yamaton/condax
