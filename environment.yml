@@ -1,7 +1,9 @@
 name: example-environment
 channels:
   - conda-forge
+  - bioconda
 dependencies:
   - jupyterlab
-  - pip:
-    - git+https://github.com/yamaton/jupyter-fs@test
+  - numpy
+  - pandas
+  - biopython
