@@ -3,7 +3,9 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - jupyterlab
+  - jupyterlab >=4.0 # jupyterlab-lsp
+  # [NOTE] jupyterhub 1.5.0 and jupyterhub-singleuser 4.0.0 fails to auth
+  - jupyterhub-singleuser >=4.0
   - numpy
   - pandas
   - biopython
